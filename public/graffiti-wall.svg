@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b75a3d"/>
+      <stop offset="0.48" stop-color="#8b3d2e"/>
+      <stop offset="1" stop-color="#54251f"/>
+    </linearGradient>
+    <pattern id="bricks" width="180" height="72" patternUnits="userSpaceOnUse">
+      <path d="M0 2H180M0 70H180M2 2V70M178 2V70" fill="none" stroke="#321916" stroke-opacity=".42" stroke-width="7"/>
+      <path d="M0 7H180M7 63H173" fill="none" stroke="#e18a5b" stroke-opacity=".28" stroke-width="5"/>
+    </pattern>
+    <filter id="rough"><feTurbulence baseFrequency=".012" numOctaves="3" result="noise"/><feBlend in="SourceGraphic" in2="noise" mode="multiply"/></filter>
+  </defs>
+  <rect width="1200" height="900" fill="url(#wall)"/>
+  <rect width="1200" height="900" fill="url(#bricks)" filter="url(#rough)"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M120 250 C155 160 220 165 245 238 C270 315 330 318 365 235 C395 166 465 188 475 275" stroke="#e8c89a" stroke-width="25" opacity=".7"/>
+    <path d="M108 270 C160 216 205 330 260 254 S360 190 410 285" stroke="#201b1a" stroke-width="13" opacity=".82"/>
+    <path d="M665 120 C750 70 850 120 810 205 S680 250 710 330 C730 385 875 350 925 265" stroke="#f0d3a4" stroke-width="22" opacity=".52"/>
+    <path d="M590 570 C680 475 755 610 825 520 S945 460 1045 565" stroke="#171a1c" stroke-width="31" opacity=".62"/>
+    <path d="M80 720 C190 650 275 780 370 690 S530 610 610 720" stroke="#d9e0d0" stroke-width="18" opacity=".38"/>
+  </g>
+  <g fill="#211918" opacity=".82" font-family="Impact, Haettenschweiler, sans-serif" font-weight="900">
+    <text x="80" y="440" font-size="150" transform="rotate(-8 80 440)">PLAY</text>
+    <text x="700" y="460" font-size="125" transform="rotate(7 700 460)">LIVE</text>
+  </g>
+  <g fill="none" stroke="#f4e2ba" stroke-width="7" opacity=".6">
+    <path d="M40 500 L1160 80"/>
+    <path d="M0 840 L1080 430"/>
+  </g>
+  <rect width="1200" height="900" fill="#090807" opacity=".34"/>
+</svg>

@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --ink: #171311;
+  --ink-soft: #2a201c;
+  --brick: #9d5d42;
+  --brick-deep: #653b2f;
+  --cream: #f6ead3;
+  --gold: #f4b942;
+  --cyan: #39c3d5;
+  --red: #e2543d;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #2a1b17;
+  color: var(--cream);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+body { position: relative; isolation: isolate; }
+.app-shell { min-height: 100vh; }
+.bg-background { background-color: transparent !important; }
+
+.wall-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(180deg, rgba(25, 14, 10, .28), rgba(19, 11, 9, .82)),
+    url('/football-street-wall.png');
+  background-position: center;
+  background-size: cover;
+  pointer-events: none;
+}
+
+.wall-backdrop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: .18;
+  background-image: repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.08) 4px, transparent 5px);
+  mix-blend-mode: overlay;
+}
+
+.wall-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(244,185,66,.18), transparent 25%),
+    radial-gradient(circle at 80% 14%, rgba(57,195,213,.14), transparent 24%),
+    linear-gradient(90deg, rgba(13,9,8,.5), transparent 25%, transparent 75%, rgba(13,9,8,.5));
+}
+
+.floating-ball {
+  position: fixed;
+  z-index: -1;
+  top: 11vh;
+  right: 6vw;
+  width: clamp(64px, 8vw, 116px);
+  aspect-ratio: 1;
+  opacity: .9;
+  filter: saturate(1.06) contrast(1.03) drop-shadow(0 10px 14px rgba(8,4,3,.32));
+  animation: ballDrift 10s cubic-bezier(.45,.05,.55,.95) infinite;
+  pointer-events: none;
+}
+.floating-ball img { display: block; width: 100%;  height: 100%;
+  object-fit: contain; }
+
+@keyframes ballDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-10deg); }
+  50% { transform: translate3d(-22px, 30px, 0) rotate(16deg); }
+}
+
+h1, h2, h3, h4, button { font-family: 'Barlow Condensed', 'DM Sans', sans-serif; letter-spacing: .02em; }
+h1 { text-shadow: 2px 3px 0 rgba(18,10,8,.45); }
+
+.gradient-text {
+  background: linear-gradient(135deg, #ffe18a, #f27b43 55%, #d94b38);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-text-gold {
+  background: linear-gradient(135deg, #ffe18a, #f4b942);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Let the existing Tailwind component vocabulary inherit the new visual language. */
+.bg-panel { background: linear-gradient(145deg, rgba(41,29,25,.93), rgba(24,17,15,.9)) !important; }
+.bg-panel-light { background: rgba(73,47,38,.72) !important; }
+.bg-panel-lighter { background: rgba(103,63,48,.7) !important; }
+.border-border { border-color: rgba(224,166,115,.28) !important; }
+.border-border-light { border-color: rgba(244,185,66,.52) !important; }
+.text-text-primary { color: #fff5e2 !important; }
+.text-text-secondary { color: #dfcbb2 !important; }
+.text-text-muted { color: #b2957e !important; }
+.text-primary { color: #55d5df !important; }
+.bg-primary { background-color: #208e9d !important; }
+.hover\\:bg-primary-hover:hover { background-color: #35b7c5 !important; }
+
+.glass-panel {
+  background: rgba(35, 24, 20, .78);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(224,166,115,.3);
+}
+
+button, .formation-card, .hover-card { text-transform: none; }
+.hover-card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.hover-card:hover { transform: translateY(-3px) rotate(-.3deg); box-shadow: 0 12px 28px rgba(7,4,3,.48), 0 0 0 1px rgba(244,185,66,.16); }
+.card-shine::after { background: linear-gradient(45deg, transparent 30%, rgba(255,242,210,.08) 50%, transparent 70%); }
+
+.formation-card.active {
+  border-color: #f4b942 !important;
+  background: linear-gradient(135deg, rgba(214,93,57,.35), rgba(244,185,66,.12)) !important;
+  box-shadow: 0 0 24px rgba(244,185,66,.2);
+}
+
+.pitch-line { stroke: rgba(255, 245, 226, .6); stroke-width: 1.5; fill: none; }
+.position-circle { transition: all .2s ease; cursor: pointer; }
+.position-circle:hover { transform: scale(1.1); }
+.timeline-event { animation: slideInRight .3s ease-out; }
+.trophy-glow { animation: trophyPulse 2s ease-in-out infinite; }
+@keyframes trophyPulse { 0%,100% { filter: drop-shadow(0 0 10px rgba(244,185,66,.6)); } 50% { filter: drop-shadow(0 0 30px rgba(244,185,66,1)); } }
+
+.stat-bar { background: linear-gradient(90deg, #208e9d, #f4b942); border-radius: 2px; height: 4px; transition: width .6s ease-out; }
+.score-display { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+.live-dot { animation: livePulse 1.5s ease-in-out infinite; }
+@keyframes livePulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.8); } }
+
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #241713; }
+::-webkit-scrollbar-thumb { background: #9a5b42; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #f4b942; }
+
+.spinner { border: 3px solid rgba(57,195,213,.2); border-top-color: #39c3d5; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.dragging { opacity: .5; transform: scale(.95); }
+.drop-target-active { border-color: #39c3d5 !important; background: rgba(57,195,213,.1) !important; }
+
+@media (max-width: 768px) { .position-circle { touch-action: manipulation; } }

@@ -21,9 +21,6 @@ export default function RootLayout({
     <html lang="en">
       <body className="app-shell bg-background text-text-primary min-h-screen antialiased">
         <div className="wall-backdrop" aria-hidden="true" />
-        <div className="floating-ball" aria-hidden="true">
-          <img src="/floating-football.png" alt="" />
-        </div>
         {children}
       </body>
     </html>

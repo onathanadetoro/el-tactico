@@ -23,10 +23,14 @@ function MatchCard({
     match.homeTeamId === tournament.userTeamId ||
     match.awayTeamId === tournament.userTeamId
   const userIsHome  = match.homeTeamId === tournament.userTeamId
+  const homeTeam = tournament.teams.find(t => t.id === match.homeTeamId)
+  const awayTeam = tournament.teams.find(t => t.id === match.awayTeamId)
   const homeWon     = match.winnerId === match.homeTeamId
   const awayWon     = match.winnerId === match.awayTeamId
 
   const stageLabels: Record<TournamentStage, string> = {
+    ROUND_OF_32:   'R32',
+    ROUND_OF_16:   'R16',
     QUARTER_FINAL: 'QF',
     SEMI_FINAL:    'SF',
     FINAL:         'F',
@@ -109,6 +113,12 @@ function MatchCard({
         )}
       </div>
 
+      {isUserMatch && match.status === 'PENDING' && (
+        <div className="mt-2 text-[10px] text-text-muted text-center">
+          Opponent strength {homeTeam?.id === tournament.userTeamId ? awayTeam?.strength?.toFixed(0) : homeTeam?.strength?.toFixed(0)} · {homeTeam?.id === tournament.userTeamId ? (awayTeam?.difficulty ?? 'medium') : (homeTeam?.difficulty ?? 'medium')} tier
+        </div>
+      )}
+
       {/* Play button */}
       {match.status === 'PENDING' && isUserMatch && (
         <button
@@ -128,8 +138,10 @@ function MatchCard({
 }
 
 export default function TournamentBracket({ tournament, onPlayMatch }: TournamentBracketProps) {
-  const stages: TournamentStage[] = ['QUARTER_FINAL', 'SEMI_FINAL', 'FINAL']
+  const stages: TournamentStage[] = ['ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'FINAL']
   const stageNames: Record<TournamentStage, string> = {
+    ROUND_OF_32:   'Round of 32',
+    ROUND_OF_16:   'Round of 16',
     QUARTER_FINAL: 'Quarter Finals',
     SEMI_FINAL:    'Semi Finals',
     FINAL:         'Final',

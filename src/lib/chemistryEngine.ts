@@ -5,6 +5,7 @@ import {
   ChemistryBonuses,
   SquadSlot,
 } from '@/types'
+import { getArchetypeProfile } from './archetypeEngine'
 
 // Safe number helper
 function safe(v: unknown, fallback: number): number {
@@ -85,8 +86,10 @@ export function calculateChemistry(
   let syncTotal = 0
   for (const p of assigned) {
     const row   = COMPAT[p.style] || {}
-    const score = row[ps]
-    syncTotal  += safe(score, 0.75)
+    const styleScore = safe(row[ps], 0.75)
+    const archetypeScore = getArchetypeProfile(p.archetype)?.tacticalFit[ps] ?? 0.8
+    // Specific archetypes refine, rather than replace, the player's broad style.
+    syncTotal  += styleScore * 0.55 + archetypeScore * 0.45
   }
   const avgSync = syncTotal / assigned.length
 

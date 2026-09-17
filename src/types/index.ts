@@ -56,6 +56,8 @@ export interface Player {
   overall:             number
   trait:               string
   weaknesses:          string
+  archetype?:          string
+  secondaryArchetype?: string
 }
 
 // ============================================================
@@ -156,7 +158,7 @@ export interface Team {
 // TOURNAMENT TYPES
 // ============================================================
 
-export type TournamentStage = 'QUARTER_FINAL' | 'SEMI_FINAL' | 'FINAL'
+export type TournamentStage = 'ROUND_OF_32' | 'ROUND_OF_16' | 'QUARTER_FINAL' | 'SEMI_FINAL' | 'FINAL'
 export type MatchStatus     = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'
 
 export interface MatchEvent {
@@ -204,6 +206,7 @@ export interface TournamentTeam {
   captainId:   string | null
   isUserTeam:  boolean
   strength:    number
+  difficulty?: 'weak' | 'medium' | 'strong'
   eliminated:  boolean
 }
 
@@ -243,6 +246,7 @@ export interface TeamStrength {
   playstyle:     TeamPlaystyle
   pressing:      number
   counterAttack: number
+  archetypeFit?: number
 }
 
 export interface SimulationResult {

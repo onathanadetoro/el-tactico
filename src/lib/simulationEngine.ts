@@ -12,6 +12,7 @@ import {
   TeamPlaystyle,
 } from '@/types'
 import { getFormation } from '@/data/formations'
+import { getArchetypeProfile } from './archetypeEngine'
 
 // ──  ── CHEMISTRY ENGINE (INLINED) ──────────────────────────
 
@@ -236,7 +237,7 @@ export function calculateTeamStrength(
     if (p && p.id) playerMap.set(p.id, p)
   }
 
-  const teamPlaystyle: string = (team as any).playstyle || 'Balanced'
+  const teamPlaystyle: TeamPlaystyle = (team as any).playstyle || 'Balanced'
 
   // Build formation position lookup
   const formPosMap = new Map<string, string>()
@@ -254,7 +255,7 @@ export function calculateTeamStrength(
   let defTotal = 0, defCount = 0
   let gkTotal  = 0, gkCount  = 0
   let ovTotal  = 0, ovCount  = 0
-  let prTotal  = 0, coTotal  = 0
+  let prTotal  = 0, coTotal  = 0, archetypeFitTotal = 0
 
   for (const slot of (team.squad || [])) {
     if (!slot || !slot.playerId) continue
@@ -280,6 +281,7 @@ export function calculateTeamStrength(
 
     prTotal += st(stats, 'pressing', 'workRate', 'stamina') * penalty
     coTotal += (st(stats, 'pace') + st(stats, 'finishing', 'clinicality', 'movement')) / 2 * penalty
+    archetypeFitTotal += (getArchetypeProfile(player.archetype)?.tacticalFit[teamPlaystyle] ?? 0.8) * 100 * penalty
 
     if (assignedPos === 'GK') {
       const gk = (
@@ -345,7 +347,7 @@ export function calculateTeamStrength(
   const chemistry = calculateChemistry(
     team.squad || [],
     players,
-    teamPlaystyle as any
+    teamPlaystyle
   )
 
   let captainBonus = 0
@@ -370,7 +372,8 @@ export function calculateTeamStrength(
     captainBonus:   n(captainBonus, 0),
     playstyle:      teamPlaystyle as any,
     pressing:       n(avgPr,  80),
-    counterAttack:  n(avgCo,  80),
+    counterAttack:   n(avgCo,  80),
+    archetypeFit:    ovCount > 0 ? n(archetypeFitTotal / ovCount, 80) : 80,
   }
 }
 
@@ -390,6 +393,8 @@ function applyBonuses(
   }
 
   let v = n(str[stat], 80)
+  // Archetype compatibility is a small team-level multiplier, preserving OVR while rewarding fit.
+  v *= 1 + (n(str.archetypeFit, 80) - 80) / 1000
 
   if (stat === 'attack') {
     v *= 1 + n(fb.attack, 0)
@@ -480,6 +485,8 @@ function calcPoss(hM: number, aM: number, hPs: string, aPs: string): [number, nu
   if (aPs === 'Possession')     a *= 1.15
   if (hPs === 'Counter Attack') h *= 0.88
   if (aPs === 'Counter Attack') a *= 0.88
+  if (hPs === 'Counter Attack' && aPs === 'Defensive') h *= 0.90
+  if (aPs === 'Counter Attack' && hPs === 'Defensive') a *= 0.90
   const total = h + a
   if (total === 0) return [50, 50]
   const hp = Math.max(30, Math.min(70, Math.round(h / total * 100 + (Math.random() - 0.5) * 8)))
@@ -657,6 +664,20 @@ export function simulateMatch(
     counterAttacks: [hCnt, aCnt],
   }
 
+  ;(stats as any).tacticalVerdict = hPs === 'Possession' && hPoss > aPoss
+    ? `${hName} controlled the midfield through possession and gave its creators time between the lines.`
+    : aPs === 'Possession' && aPoss > hPoss
+      ? `${aName} controlled the midfield through possession and limited the space available to the opposition.`
+      : hPs === 'Pressing' && hCnt + hShots.onTarget > aCnt + aShots.onTarget
+        ? `${hName}'s pressure created recoveries high up the pitch and turned defensive work into chances.`
+        : aPs === 'Pressing' && aCnt + aShots.onTarget > hCnt + hShots.onTarget
+          ? `${aName}'s pressure created recoveries high up the pitch and disrupted the build-up.`
+          : hPs === 'Counter Attack' && hCnt > aCnt
+            ? `${hName} found the space behind the defensive line in transition.`
+            : aPs === 'Counter Attack' && aCnt > hCnt
+              ? `${aName} found the space behind the defensive line in transition.`
+              : `The result was decided by the balance between team quality, chemistry and the key moments.`
+
   let finalHomeGoals = hGoals
   let finalAwayGoals = aGoals
   let events = makeEvents(hGoals, aGoals, hId, aId, hName, aName, hPs, aPs)
@@ -701,7 +722,8 @@ export function generateAITeam(
   teamName: string,
   formationType: string,
   availablePlayers: Player[],
-  playstyle: string
+  playstyle: string,
+  difficulty: 'weak' | 'medium' | 'strong' = 'medium'
 ): any {
   const form  = getFormation(formationType as any)
   const squad: any[] = []
@@ -711,11 +733,11 @@ export function generateAITeam(
     const pool = availablePlayers
       .filter(p => p.position === fp.position && !used.has(p.id))
       .sort((a, b) => n(b.overall, 91) - n(a.overall, 91))
-      .slice(0, 8)
+    const window = difficulty === 'strong' ? pool.slice(0, 8) : difficulty === 'weak' ? pool.slice(Math.max(0, pool.length - 8)) : pool.slice(2, 10)
 
     const pick =
-      pool.find(p => p.preferredPlaystyle === playstyle) ??
-      pool[0] ??
+      window.find(p => p.preferredPlaystyle === playstyle) ??
+      window[0] ??
       availablePlayers.find(p => !used.has(p.id))
 
     if (pick) {
@@ -747,6 +769,7 @@ export function generateAITeam(
     squad, captainId,
     isUserTeam: false,
     strength: avgOv,
+    difficulty,
     eliminated: false,
   }
 }

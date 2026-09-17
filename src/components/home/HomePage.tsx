@@ -20,9 +20,9 @@ export default function HomePage() {
 
   const features = [
     { icon: <Users size={20} />,   title: '100 Players',      desc: 'Full database of unique players with detailed stats',    color: 'text-primary' },
-    { icon: <Trophy size={20} />,  title: '7 Formations',     desc: 'Choose from 4-3-3, 4-4-2, 3-5-2, and more',             color: 'text-warning' },
+    { icon: <Trophy size={20} />,  title: '7 Formations',     desc: 'Choose a shape, archetypes, and a tactical identity',       color: 'text-warning' },
     { icon: <Zap size={20} />,     title: 'Live Simulation',  desc: 'Animated match with real-time events and stats',         color: 'text-success' },
-    { icon: <Star size={20} />,    title: 'Tournament Mode',  desc: 'Quarter Finals, Semi Finals, and the Grand Final',       color: 'text-danger' },
+    { icon: <Star size={20} />,    title: 'FA Cup Mode',       desc: 'One-loss knockout football against real clubs',          color: 'text-danger' },
     { icon: <Target size={20} />,  title: 'Tactics Engine',   desc: 'Formation bonuses, captain boosts & team chemistry',     color: 'text-purple-400' },
     { icon: <Shield size={20} />,  title: 'Auto Save',        desc: 'Progress saved automatically to local storage',          color: 'text-cyan-400' },
   ]
@@ -53,8 +53,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Build your squad, choose your formation, and lead your team to tournament glory.
-            Every decision matters on the pitch.
+            Build a team. Define your style. See if your tactics work.
           </p>
 
           {/* CTA Buttons */}
@@ -171,7 +170,7 @@ export default function HomePage() {
       {/* Footer */}
       <div className="border-t border-border py-6 text-center">
         <p className="text-text-muted text-xs">
-          FUT Draft · Built with Next.js & Tailwind CSS · Soccer
+          FUT Draft · Built with Next.js & Tailwind CSS · FA Cup football
         </p>
       </div>
     </div>

@@ -2,6 +2,7 @@ import {
   Player, Position, PlayerStyle, TeamPlaystyle,
   GKStyle, DEFStyle, MIDStyle, ATTStyle, PlayerStats
 } from '@/types'
+import { enrichPlayers } from '@/lib/archetypeEngine'
 
 // ============================================================
 // NAME POOLS
@@ -453,7 +454,7 @@ export function generatePlayers(): Player[] {
     }
   }
 
-  return players.sort((a, b) => b.overall - a.overall)
+  return enrichPlayers(players.sort((a, b) => b.overall - a.overall))
 }
 
 // ============================================================

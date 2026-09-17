@@ -31,6 +31,8 @@ export default function MatchSimulation({ match, tournament, onMatchComplete }: 
   const isUserHome  = match.homeTeamId === tournament.userTeamId
   const userTeamName = isUserHome ? match.homeTeamName : match.awayTeamName
   const oppTeamName  = isUserHome ? match.awayTeamName : match.homeTeamName
+  const opponent = tournament.teams.find(t => t.id === (isUserHome ? match.awayTeamId : match.homeTeamId))
+  const userTeam = tournament.teams.find(t => t.id === tournament.userTeamId)
 
   // Simulate the match result upfront
   const simulatedMatch = React.useMemo(() => {
@@ -140,6 +142,9 @@ export default function MatchSimulation({ match, tournament, onMatchComplete }: 
   const isLosing  = userScore < oppScore
 
   const stats = simulatedMatch.stats
+  const penaltyData = (stats as any)?.penaltyShootout
+  const userPenalties = penaltyData ? (isUserHome ? penaltyData.homeGoals : penaltyData.awayGoals) : 0
+  const oppPenalties = penaltyData ? (isUserHome ? penaltyData.awayGoals : penaltyData.homeGoals) : 0
   const userStats = {
     possession:    isUserHome ? stats?.possession[0] : stats?.possession[1],
     shots:         isUserHome ? stats?.shots[0]       : stats?.shots[1],
@@ -194,9 +199,11 @@ export default function MatchSimulation({ match, tournament, onMatchComplete }: 
                 ? 'bg-warning/20 text-warning border border-warning/30'
                 : 'bg-primary/20 text-primary border border-primary/30'
             )}>
-              {match.stage === 'QUARTER_FINAL' ? 'Quarter Final'
-                : match.stage === 'SEMI_FINAL' ? 'Semi Final'
-                : 'Final'}
+              {match.stage === 'ROUND_OF_32' ? 'FA Cup — Round of 32'
+                : match.stage === 'ROUND_OF_16' ? 'FA Cup — Round of 16'
+                : match.stage === 'QUARTER_FINAL' ? 'FA Cup — Quarter Final'
+                : match.stage === 'SEMI_FINAL' ? 'FA Cup — Semi Final'
+                : 'FA Cup — Final'}
             </span>
           </div>
 
@@ -282,10 +289,12 @@ export default function MatchSimulation({ match, tournament, onMatchComplete }: 
             <h3 className="text-xl font-black text-text-primary mb-2">
               {match.stage === 'FINAL' ? 'The Final!' : 'Match Preview'}
             </h3>
-            <p className="text-text-secondary mb-6">
+            <p className="text-text-secondary mb-2">
               {match.homeTeamName} vs {match.awayTeamName}
             </p>
-
+            <p className="text-xs text-text-muted mb-6">
+              Your team {userTeam?.strength ?? '—'} OVR · {oppTeamName} {opponent?.strength ?? '—'} OVR · {(opponent?.difficulty ?? 'medium').toUpperCase()} difficulty
+            </p>
             <Button variant="primary" size="xl" onClick={runSimulation} icon={<Play size={20} className="fill-white" />}>
               Kick Off!
             </Button>
@@ -307,7 +316,7 @@ export default function MatchSimulation({ match, tournament, onMatchComplete }: 
 
         {/* COMPLETE */}
         {phase === 'COMPLETE' && simulatedMatch && (
-          <>
+          <div>
             <div className={clsx(
               'bg-panel border rounded-xl p-6 text-center animate-celebration',
               simulatedMatch.winnerId === tournament.userTeamId
@@ -315,51 +324,37 @@ export default function MatchSimulation({ match, tournament, onMatchComplete }: 
                 : 'border-danger'
             )}>
               {simulatedMatch.winnerId === tournament.userTeamId ? (
-                <>
+                <div>
                   <div className="text-2xl font-black mb-2">Victory</div>
                   <h3 className="text-xl font-black text-success mb-1">Victory!</h3>
                   <p className="text-text-secondary mb-4">
                     {userTeamName} advances to the next round!
                   </p>
-                </>
+                </div>
               ) : (
-                <>
+                <div>
                   <div className="text-2xl font-black mb-2">Defeat</div>
                   <h3 className="text-xl font-black text-danger mb-1">Eliminated</h3>
                   <p className="text-text-secondary mb-4">
                     {oppTeamName} wins. Better luck next time.
                   </p>
-                </>
+                </div>
               )}
-              <Button variant="primary" size="lg" onClick={handleContinue} icon={<ChevronRight size={18} />} iconPosition="right">
+              <Button variant="primary" size="lg" onClick={handleContinue}>
                 Continue
               </Button>
             </div>
-            
-            {/* Penalty Shootout Display */}
-            {(() => {
-              const penaltyData = (simulatedMatch.stats as any)?.penaltyShootout
-              if (!penaltyData) return null
-              const userPenalties = isUserHome ? penaltyData.homeGoals : penaltyData.awayGoals
-              const oppPenalties = isUserHome ? penaltyData.awayGoals : penaltyData.homeGoals
-              return (
-                <div className="bg-panel border border-warning rounded-xl p-4 animate-fade-in">
-                  <h3 className="font-bold text-warning mb-3 text-sm">🔔 Penalty Shootout</h3>
-                  <div className="flex items-center justify-center gap-8">
-                    <div className="text-center">
-                      <p className="text-xs text-text-secondary mb-2">{userTeamName}</p>
-                      <p className="text-3xl font-black text-text-primary">{userPenalties}</p>
-                    </div>
-                    <span className="text-text-muted">-</span>
-                    <div className="text-center">
-                      <p className="text-xs text-text-secondary mb-2">{oppTeamName}</p>
-                      <p className="text-3xl font-black text-text-primary">{oppPenalties}</p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })()}
-          </>
+            <div className="bg-panel-light border border-border rounded-xl p-4 mt-4 text-left">
+              <p className="text-xs font-bold text-primary uppercase tracking-wide mb-1">Tactical verdict</p>
+              <p className="text-sm text-text-secondary">{String((stats as any)?.tacticalVerdict ?? 'The result reflected team quality, chemistry and key moments.')}</p>
+            </div>
+            {penaltyData && (
+              <div className="bg-panel border border-warning rounded-xl p-4 mt-4 text-center">
+                <h3 className="font-bold text-warning mb-2 text-sm">Penalty Shootout</h3>
+                <span className="text-text-primary font-black">{userTeamName} {userPenalties} — {oppPenalties} {oppTeamName}</span>
+              </div>
+            )}
+          </div>
         )}
 
         {/* MATCH STATS */}

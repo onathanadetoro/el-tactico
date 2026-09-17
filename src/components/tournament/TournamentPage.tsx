@@ -98,11 +98,11 @@ export default function TournamentPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="max-w-lg w-full text-center space-y-6">
-          <div className="text-3xl font-black mb-4">Tournament</div>
-          <h1 className="text-3xl font-black gradient-text">Tournament</h1>
+          <div className="text-3xl font-black mb-4">FA Cup</div>
+          <h1 className="text-3xl font-black gradient-text">FA Cup</h1>
           <p className="text-text-secondary">
-            You're about to enter the tournament with <strong className="text-text-primary">{userTeam?.name}</strong>.
-            Compete against 7 AI teams across Quarter Finals, Semi Finals, and the Final!
+            You're about to enter the FA Cup with <strong className="text-text-primary">{userTeam?.name}</strong>.
+            One loss eliminates you. Navigate real clubs through the Quarter Final, Semi Final, and Final.
           </p>
 
           {/* Team summary */}
@@ -208,7 +208,7 @@ export default function TournamentPage() {
             >
               <ChevronLeft size={16} /> Home
             </button>
-            <h1 className="text-xl font-black gradient-text">Tournament</h1>
+            <h1 className="text-xl font-black gradient-text">FA Cup</h1>
             <div className="text-xs text-text-muted">
               {tournament.currentStage?.replace('_', ' ') ?? 'Complete'}
             </div>
@@ -306,7 +306,7 @@ export default function TournamentPage() {
         <div className="bg-panel border border-border rounded-xl p-4 md:p-6">
           <h2 className="font-bold text-text-primary mb-4 flex items-center gap-2">
             <Trophy size={18} className="text-warning" />
-            Tournament Bracket
+            FA Cup Bracket
           </h2>
           <TournamentBracket
             tournament={tournament}

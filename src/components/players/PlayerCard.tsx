@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import clsx from 'clsx'
-import { Player } from '@/types'
+import { Player, TeamPlaystyle } from '@/types'
 import {
   getOverallColor, getPositionColor, getStatColor,
   getVisibleStats
@@ -10,6 +10,7 @@ import {
 import { PositionBadge } from '@/components/ui/Badge'
 import StatBar from '@/components/ui/StatBar'
 import { Star, Zap, AlertTriangle, X, ChevronRight } from 'lucide-react'
+import { getArchetypeProfile } from '@/lib/archetypeEngine'
 
 interface PlayerCardProps {
   player: Player
@@ -35,6 +36,7 @@ function PlayerDetailPanel({
   isCaptain,
   selectable,
   disabled,
+  teamPlaystyle,
 }: {
   player: Player
   onClose: () => void
@@ -44,6 +46,7 @@ function PlayerDetailPanel({
   isCaptain?: boolean
   selectable?: boolean
   disabled?: boolean
+  teamPlaystyle?: string
 }) {
   const overallColor = getOverallColor(player.overall)
   const visibleStats = getVisibleStats(player.position as string)
@@ -92,6 +95,7 @@ function PlayerDetailPanel({
                 {player.nationality} · Age {player.age}
               </p>
               <PositionBadge position={player.position} />
+              <span className="text-[10px] font-bold text-primary uppercase tracking-wide">{player.archetype ?? player.style}</span>
             </div>
           </div>
         </div>
@@ -122,6 +126,12 @@ function PlayerDetailPanel({
                 {player.weaknesses}
               </p>
             </div>
+
+            {teamPlaystyle && (() => {
+              const fit = getArchetypeProfile(player.archetype)?.tacticalFit[teamPlaystyle as TeamPlaystyle] ?? 0.8
+              const label = fit >= 0.95 ? 'Excellent fit' : fit >= 0.85 ? 'Good fit' : 'Mixed fit'
+              return <p className="text-xs text-text-secondary mt-2"><span className="font-bold text-primary">{label}</span> for {teamPlaystyle} · {player.archetype ?? player.style}</p>
+            })()}
           </div>
 
           {/* Stats */}
@@ -261,6 +271,7 @@ export default function PlayerCard({
               </div>
               <div className="flex items-center gap-1.5 flex-wrap">
                 <PositionBadge position={player.position} size="sm" />
+                <span className="text-[10px] font-semibold text-primary truncate">{player.archetype ?? player.style}</span>
                 {isOOP && (
                   <span className="text-xs text-warning font-bold">⚠ OOP</span>
                 )}
@@ -325,6 +336,7 @@ export default function PlayerCard({
             isCaptain={isCaptain}
             selectable={selectable}
             disabled={disabled}
+            teamPlaystyle={teamPlaystyle}
           />
         )}
       </>
@@ -360,6 +372,7 @@ export default function PlayerCard({
             </div>
             <div className="flex flex-col items-end gap-1">
               <PositionBadge position={player.position} />
+              <span className="text-[10px] font-bold text-primary uppercase tracking-wide">{player.archetype ?? player.style}</span>
               {isCaptain && (
                 <span className="flex items-center gap-1 text-warning text-xs font-bold">
                   <Star size={10} className="fill-warning" /> Captain
